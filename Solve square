@@ -72,17 +72,6 @@ int Solvelinear(double b, double c, double *x1) {
     }
 }
 
-//! what func is do: compare d and 0
-//! @param[in] d;
-//! @return h=0 if false and h=1 if true
-
-int Compare(double d) {
-    double e = 0.0001;
-    if (d - 0 < e)
-        return 1;
-    else return 0;
-}
-
 //! what func is do : solves quatratic equations
 //! @param[in] a, b, c, *x1=x1, *x2=x2
 //! @return return 2 if two roots; return 1 if one root; return 0 else
@@ -93,13 +82,11 @@ int Solvesquare(double a, double b, double c, double *x1, double *x2) {
 
     double d = NAN, h = NAN;
     d = b * b - 4 * a * c;
-    h = Compare(d);
-    if (h == 1) {
+    if (d == 0) {
         *x1 = -b / (2 * a);
         return ONEROOT;
     } else {
         if (d < 0)
-
             return NOROOTS;
 
         if (d > 0) {
