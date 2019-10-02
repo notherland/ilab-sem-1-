@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <math.h>
+#include <assert.h>
+
+#define NOROOTS 0
+#define ONEROOT 1
+#define TWOROOTS 2
+#define INFINITELYMANYROOTS 3
+
+int Compare(double d);
+
+int Solvesquare(double a, double b, double c, double *x1, double *x2);
+
+int Solvelinear(double b, double c, double *x1);
+
+
+//! what func is do: solves quadratic equations
+//! @param[in] a, b, c, *x1 = x1, *x2 = x2
+//! @return printf ("") if condition is met
+
+int main() {
+    printf("enter a, b, c:  \n");
+
+    double a = NAN, b = NAN, c = NAN, x1 = NAN, x2 = NAN;
+    int nroots_;
+
+    if (scanf("%lf %lf %lf", &a, &b, &c) != 3)
+        printf("error\n");
+    else {
+        if (a == 0) {
+            nroots_ = Solvelinear(b, c, &x1);
+        }
+
+        if (a != 0) {
+            nroots_ = Solvesquare(a, b, c, &x1, &x2);
+        }
+        switch (nroots_) {
+            case INFINITELYMANYROOTS :
+                printf("infinitely many roots\n");
+                break;
+            case TWOROOTS :
+                printf("there are %d answers %lf, %lf\n", Solvesquare(a, b, c, &x1, &x2), x1, x2);
+                break;
+
+            case ONEROOT :
+                printf("there is %d answer %lf\n", Solvesquare(a, b, c, &x1, &x2), x1);
+                break;
+
+            case NOROOTS :
+                printf("no roots\n");
+                break;
+        }
+
+    }
+}
+
+//! what func is do  : solves line equations
+//! @param[in] b, c, *x1=x1
+//! @return return 1 if condition is met
+
+int Solvelinear(double b, double c, double *x1) {
+    assert(x1);
+    if (b == 0 && c != 0)
+
+        return NOROOTS;
+
+    if (b == 0 && c == 0) return INFINITELYMANYROOTS;
+
+    if (b != 0) {
+        *x1 = -c / b;
+        return ONEROOT;
+    }
+}
+
+//! what func is do: compare d and 0
+//! @param[in] d;
+//! @return h=0 if false and h=1 if true
+
+int Compare(double d) {
+    double e = 0.0001;
+    if (d - 0 < e)
+        return 1;
+    else return 0;
+}
+
+//! what func is do : solves quatratic equations
+//! @param[in] a, b, c, *x1=x1, *x2=x2
+//! @return return 2 if two roots; return 1 if one root; return 0 else
+
+int Solvesquare(double a, double b, double c, double *x1, double *x2) {
+    assert(x1);
+    assert(x2);
+
+    double d = NAN, h = NAN;
+    d = b * b - 4 * a * c;
+    h = Compare(d);
+    if (h == 1) {
+        *x1 = -b / (2 * a);
+        return ONEROOT;
+    } else {
+        if (d < 0)
+
+            return NOROOTS;
+
+        if (d > 0) {
+            *x1 = (-b + sqrt(d)) / (2 * a);
+            *x2 = (-b - sqrt(d)) / (2 * a);
+            return TWOROOTS;
+        }
+    }
+
+}
+
