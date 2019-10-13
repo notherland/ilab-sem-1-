@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+int Length();
+
+int Name();
+
+void Input();
+
+int Amount();
+
+void Sort();
+
+int Comparison();
+
+void Output();
+
+struct strings {
+    int *ptr;
+    int len;
+};
+
+struct strings Maketext();
+
+int main() {
+
+    int i = 0, N = 0, name, n = 0, size, n_lines = 0, n_symbols = 0, n_c = 0, k;
+    FILE *f = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r");
+    assert (f!=NULL);
+    size = Length(f);
+    n_lines = Amount(f, &n_symbols);
+    char *buffer = (char *) calloc(n_symbols, sizeof(char) + 1);
+    if (*buffer = 0)
+        printf("Недостаточно памяти");
+    struct strings *text = (struct strings *) calloc(n_symbols, sizeof(struct strings) + 1);
+    Input(buffer, n_symbols);
+    for (i = 0; i < n_lines; i += 1) {
+        text[i] = Maketext(buffer, &n_c, &n, n_symbols);
+    }
+    qsort(text, n_lines, sizeof(struct strings), Comparison);
+    for (i = 0; i < n_lines; i += 1) {
+        printf("|%c| %d\n", *(text[i].ptr), text[i].len);
+        for (k = 0; k < text[i].len - 1; k += 1)
+       printf("%c\n", *(text[i].ptr+k));
+    }
+}
+
+void Input(char Ibuffer[], FILE *f, int n_symbols)
+{
+    if (fread(Ibuffer, sizeof(char), n_symbols, f = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r")) == 0)
+        printf("error");
+}
+
+int Length(FILE *f) {
+    int length = 0;
+    fseek(f, 0, SEEK_END);
+    length = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    return length;
+}
+
+
+int Amount(FILE *f, int *n_symbols) {
+    int counterl = 1, counterc = 0;
+    char ch;
+    while ((ch = fgetc(f)) != EOF) {
+        counterc++;
+        if (ch == '\n') {
+            ++counterl;
+        }
+    }
+    *n_symbols = counterc;
+    return counterl;
+}
+
+int Comparison(const void *a, const void *b) {
+    assert (a != 0);
+    assert (b != 0);
+    struct strings s1 = *(struct strings *) a;
+    struct strings s2 = *(struct strings *) b;
+    //printf("%d\n", (s2)->len);
+    //printf("%c\n", *(s2->ptr+1));
+    char *string1 = s1.ptr;
+    char *string2 = s2.ptr;
+    int x1 = 0, x2 = 0;
+    while ((x1 + 1 < (s1.len)) && (x2 + 1 < (s2.len)) && (*string1 == *string2)) {
+        while (isalpha(*string1) == 0) x1 += 1;
+        while (isalpha(*string1) == 0) x2 += 1;
+        x1 += 1;
+        x2 += 1;
+    }
+    /* printf("%c\n", *(string1));
+     printf("%c ", *(string2));
+     printf("%c\n", *(string1));
+     printf ("%d", *(string1)-*(string2)) ;*/
+    return (*(string1 + x1) - *(string2 + x2));
+}
+
+struct strings Maketext(char *buffer, int *r1, int *r, int n_symbols) {
+    struct strings make;
+    make.ptr = buffer + *r1;
+    *r = *r1;
+    while (((*(buffer + *r1)) != '\n') && (*r1 < n_symbols)) {
+        *r1 += 1;
+    }
+    *r1 += 1;
+    make.len = *r1 - *r;
+    return make;
+}
+
+
+
