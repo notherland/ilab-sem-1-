@@ -3,57 +3,64 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-int Length(FILE *f);
-
-void Input(char Inputbuffer[], FILE *f, int size);
-
-int Amount(char *buffer, int size);
-
-int Comparison(const void *a, const void *b);
-
-void Output();
-
 struct strings {
     int *ptr;
     int len;
 };
 
+int Length(FILE *f);
+
+void Input(char Inputbuffer[], int size);
+
+int Amount(char *buffer, int size);
+
+int Comparison(const void *a, const void *b);
+
+void Output(struct strings *text, int n_lines, FILE *writefile);
+
 struct strings Maketext(char *buffer, int *r1, int *r, int size);
 
 int main() {
 
-    int i = 0, n = 0, size, n_lines = 0, n_c = 0;
-    FILE *f = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r");
-    assert (f != NULL);
-    size = Length(f);
-    fclose(f);
+    int i = 0, number1 = 0, size, n_lines = 0, number2 = 0;
+    FILE *readfile = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r");
+    FILE *writefile = fopen("/home/ksenia/CLionProjects/Oneginsorted.txt", "w");
+    assert (readfile != NULL);
+    size = Length(readfile);
+    fclose(readfile);
     char *buffer = (char *) calloc(size, sizeof(char) + 1);
-    if (*buffer = 0)
+    if (buffer == NULL)
         printf("Недостаточно памяти");
     struct strings *text = (struct strings *) calloc(size, sizeof(struct strings) + 1);
-    if (*text = 0)
+    if (text == NULL)
         printf("Недостаточно памяти");
     Input(buffer, size);
     n_lines = Amount(buffer, size);
     for (i = 0; i < n_lines; i += 1) {
-        text[i] = Maketext(buffer, &n_c, &n, size);
+        text[i] = Maketext(buffer, &number2, &number1, size);
     }
     qsort(text, n_lines, sizeof(struct strings), Comparison);
-    for (i = 0; i < n_lines; i += 1) {
-        printf("%s\n", text[i].ptr);
-    }
+    Output(text, n_lines, writefile);
+    fclose(writefile);
+    free (buffer);
+    free (text);
+
 }
 
-void Input(char Inputbuffer[], FILE *f, int size) {
-    if (fread(Inputbuffer, sizeof(char), size, f = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r")) == 0)
+void Input(char Inputbuffer[], int size) {
+    FILE *fp;
+    if (fread(Inputbuffer, sizeof(char), size, fp = fopen("/home/ksenia/CLionProjects/Onegin/file.txt", "r")) == 0)
         printf("error");
+    fclose(fp);
+
 }
 
-int Length(FILE *f) {
+int Length(FILE *readfile) {
+    assert (readfile != 0);
     int length = 0;
-    fseek(f, 0, SEEK_END);
-    length = ftell(f);
-    fseek(f, 0, SEEK_SET);
+    fseek(readfile, 0, SEEK_END);
+    length = ftell(readfile);
+    fseek(readfile, 0, SEEK_SET);
     return length;
 }
 
@@ -81,30 +88,41 @@ int Comparison(const void *a, const void *b) {
     char *string2 = s2.ptr;
     // printf ("%c %c\n", *string1, *string2);
     int x1 = 0, x2 = 0;
-    while ((x1 + 1 < (s1.len)) && (x2 + 1 < (s2.len)) && (*(string1 + x1) == *(string2 + x2))) {
-        while (isalpha(*(string1 + x1)) == 0) { x1 += 1; }
+    while (!isalpha(*(string1 + x1))) x1 += 1;
+    while (!isalpha(*(string2 + x2))) x2 += 1;
+    while ((x1 + 1 < s1.len) && (x2 + 1 < s2.len) && (*(string1 + x1) == *(string2 + x2))) {
+        while (!isalpha(*(string1 + x1))) x1 += 1;
         while (!isalpha(*(string2 + x2))) x2 += 1;
-        x1 += 1;
-        x2 += 1;
-
+        if (*(string1 + x1) == *(string2 + x2)) {
+            x1 += 1;
+            x2 += 1;
+        }
     }
+
     return (*(string1 + x1) - *(string2 + x2));
 }
 
-struct strings Maketext(char *buffer, int *r1, int *r, int size) {
+struct strings Maketext(char *buffer, int *number2, int *number1, int size) {
+    assert (buffer != 0);
+    assert (number2 != 0);
+    assert (number1 != 0);
     struct strings make;
-    make.ptr = buffer + *r1;
-    *r = *r1;
-    while ((buffer[*r1] != '\0') && (*r1 < size)) {
-        *r1 += 1;
+    make.ptr = buffer + *number2;
+    *number1 = *number2;
+    while ((buffer[*number2] != '\0') && (*number2 < size)) {
+        *number2 += 1;
     }
-    *r1 += 1;
-    make.len = *r1 - *r;
+    *number2 += 1;
+    make.len = *number2 - *number1;
     return make;
 }
 
-void Output();
-
-
-
-
+void Output(struct strings *text, int n_lines, FILE *writefile) {
+    int i = 0;
+    for (i = 0; i < n_lines; i += 1) {
+        printf("%s\n", text[i].ptr);
+    }
+    for (int i = 0; i < n_lines; i++) {
+        fprintf(writefile, "%s\n", text[i].ptr);
+    }
+}
