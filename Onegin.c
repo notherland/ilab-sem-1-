@@ -17,7 +17,7 @@ int Amount(char *buffer, int size);
 
 int Comparison(const void *a, const void *b);
 
-void Output(struct strings *text, int n_lines, FILE *writefile);
+void Output(struct strings *text, int n_lines, FILE *writefile, int size);
 
 struct strings Maketext(char *buffer, int *number, int *n_lines);
 
@@ -47,7 +47,8 @@ int main() {
         text[i] = Maketext(buffer, &number, &n_lines);
     }
     qsort(text, n_lines, sizeof(struct strings), Comparison);
-    Output(text, n_lines, writefile);
+    Output(text, n_lines, writefile, size);
+    fclose(readfile);
     fclose(writefile);
     free(buffer);
     free(text);
@@ -101,14 +102,14 @@ int Comparison(const void *a, const void *b) {
     while ((!isalpha(*(string2 + x2))) && (x2 + 1 < s2.len - 1)) x2 += 1;
     while ((x1 + 1 < s1.len) && (x2 + 1 < s2.len) &&
            ((*(string1 + x1) == *(string2 + x2)) || (!isalpha(*(string1 + x1))) || (!isalpha(*(string2 + x2))))) {
-        while (!isalpha(*(string1 + x1))) x1 += 1;
-        while (!isalpha(*(string2 + x2))) x2 += 1;
+        while ((!isalpha(*(string1 + x1))) && (x1 + 1 < s1.len - 1)) x1 += 1;
+        while ((!isalpha(*(string2 + x2))) && (x2 + 1 < s2.len - 1)) x2 += 1;
         if (*(string1 + x1) == *(string2 + x2)) {
             x1 += 1;
             x2 += 1;
         }
     }
-   // printf("%d\n", *(string1 + x1) - *(string2 + x2));
+    // printf("%d\n", *(string1 + x1) - *(string2 + x2));
     return (*(string1 + x1) - *(string2 + x2));
 }
 
@@ -134,12 +135,20 @@ struct strings Maketext(char *buffer, int *number, int *n_lines) {
     return make;
 }
 
-void Output(struct strings *text, int n_lines, FILE *writefile) {
+void Output(struct strings *text, int n_lines, FILE *writefile, int size) {
     int i = 0;
+    char n = '\n';
     for (i = 0; i < n_lines; i += 1) {
         printf("%s\n", text[i].ptr);
     }
     for (int i = 0; i < n_lines; i++) {
-        fprintf(writefile, "%s\n", text[i].ptr);
+        if ((fwrite(text[i].ptr, sizeof(char), text[i].len, writefile)) < text[i].len)
+            printf("fail");
+            fwrite (&n, sizeof(char), 1, writefile);
+
     }
+
+    //for (int i = 0; i < n_lines; i++) {
+    //fprintf(writefile, "%s\n", text[i].ptr);
+
 }
