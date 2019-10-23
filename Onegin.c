@@ -137,14 +137,13 @@ struct strings Maketext(char *buffer, int *number, int *n_lines) {
 
 void Output(struct strings *text, int n_lines, FILE *writefile, int size) {
     int i = 0;
-    char n = '\n';
     for (i = 0; i < n_lines; i += 1) {
         printf("%s\n", text[i].ptr);
     }
     for (int i = 0; i < n_lines; i++) {
         if ((fwrite(text[i].ptr, sizeof(char), text[i].len, writefile)) < text[i].len)
             printf("fail");
-            fwrite (&n, sizeof(char), 1, writefile);
+            fprintf (writefile, "\n");
 
     }
 
